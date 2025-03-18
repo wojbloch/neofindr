@@ -1,0 +1,7 @@
+[tool.pyright]
+reportMissingImports = true
+reportMissingTypeStubs = false
+useLibraryCodeForTypes = true
+pythonVersion = "3.13"
+pythonPlatform = "Linux"
+

@@ -1,0 +1,13 @@
+django
+djangorestframework
+psycopg2-binary
+gunicorn
+whitenoise
+python-dotenv
+kombu
+celery
+redis
+django-celery-beat
+django-prometheus
+prometheus-client
+
