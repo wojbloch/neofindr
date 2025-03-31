@@ -1,3 +1,4 @@
+amqp
 django
 djangorestframework
 psycopg2-binary
@@ -10,4 +11,5 @@ redis
 django-celery-beat
 django-prometheus
 prometheus-client
-
+djangorestframework-simplejwt
+requests

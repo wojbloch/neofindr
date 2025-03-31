@@ -16,6 +16,7 @@ DEBUG = env("DEBUG", False)
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
+AUTH_USER_MODEL = "core.User"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -24,10 +25,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
     "rest_framework",
     "django_celery_beat",
     "core",
     "scrapers",
+    "rest_framework.authtoken",
+    "rest_framework_simplejwt",
 ]
 
 MIDDLEWARE = [
@@ -39,9 +43,19 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "utils.helpers.QueryLoggingMiddleware",
+    "utils.helpers.RequestLoggingMiddleware",
+    "utils.helpers.ErrorLoggingMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
 
 TEMPLATES = [
     {
@@ -102,6 +116,61 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s',
+            'datefmt': '%d/%b/%Y %H:%M:%S',
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'utils.helpers.SafeRotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'app.log'),
+            'maxBytes': 5 * 1024 ** 2,
+            'backupCount': 10,
+            'formatter': 'standard',
+        },
+        'console': {
+            'level': 'WARNING',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {
+        'custom': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['file', 'console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        "celery": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+        "celery.task": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+        "celery.redirected": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+        "psycopg.pq": {
+            "propagate": False,
+        },
+    },
+}
 
 LANGUAGE_CODE = "en-us"
 
